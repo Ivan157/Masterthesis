@@ -1,0 +1,23 @@
+# Binomial likelihood, logit link 
+# Fixed effects model for multi-arm trials 
+
+model{
+  for(i in 1:ns){ # LOOP THROUGH STUDIES 
+    mu[i] ~ dnorm(0,.0001) # vague priors for all trial baselines 
+    for (k in 1:na[i]) { # LOOP THROUGH ARMS 
+      r[i,k] ~ dbin(p[i,k],n[i,k]) # binomial likelihood 
+      logit(p[i,k]) <- mu[i] + d[t[i,k]] - d[t[i,1]] # model for linear predictor 
+      rhat[i,k] <- p[i,k] * n[i,k] # expected value of the numerators 
+      dev[i,k] <- 2 * (r[i,k] * (log(r[i,k])-log(rhat[i,k]))   +  (n[i,k]-r[i,k]) * (log(n[i,k]-r[i,k]) - log(n[i,k]-rhat[i,k])))  #Deviance contribution 
+    } 
+    resdev[i] <- sum(dev[i,1:na[i]]) # summed residual deviance contribution for this trial 
+  }    
+  totresdev <- sum(resdev[1:22]) #Total Residual Deviance 
+  d[1]<-0 # treatment effect is zero for reference treatment 
+  for (k in 2:nt){ d[k] ~ dnorm(0,.0001) } # vague priors for treatment effects 
+  
+  # Provide estimates of treatment effects T[k] on the natural (probability) scale  
+  # Given a Mean Effect, meanA, for 'standard' treatment 1, with precision (1/variance) precA 
+  for (k in 1:nt) { logit(T[k]) <- A + d[k] }
+  A ~ dnorm(-2.2, 3.3)  
+ }

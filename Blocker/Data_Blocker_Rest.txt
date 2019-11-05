@@ -1,0 +1,4 @@
+# Data_Blocker_Rest
+
+nt <- 2
+ns <- 22
