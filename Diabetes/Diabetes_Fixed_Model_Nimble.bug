@@ -1,0 +1,24 @@
+# Program 3(b):  Binomial likelihood, cloglog link, Fixed Effects (Diabetes example) 
+# Binomial likelihood, cloglog link 
+# Fixed effects model  
+
+model{ 
+for(i in 1:ns){ # LOOP THROUGH STUDIES 
+  mu[i] ~ dnorm(0,.0001) # vague priors for all trial baselines 
+  for (k in 1:na[i]) { # LOOP THROUGH ARMS 
+    r[i,k] ~ dbin(p[i,k],n[i,k]) # Binomial likelihood 
+    cloglog(p[i,k]) <- log(time[i]) + mu[i] + d[t[i,k]] - d[t[i,1]] # model for linear predictor 
+    rhat[i,k] <- p[i,k] * n[i,k] # expected value of the numerators 
+    dev[i,k] <- 2 * (r[i,k] * (log(r[i,k])-log(rhat[i,k])) + (n[i,k]-r[i,k]) * (log(n[i,k]-r[i,k]) - log(n[i,k]-rhat[i,k]))) #Deviance contribution 
+  } 
+  resdev[i] <- sum(dev[i,1:na[i]]) # summed residual deviance contribution for this trial 
+}    
+totresdev <- sum(resdev[1:22]) #Total Residual Deviance 
+d[1]<-0 # treatment effect is zero for reference treatment 
+for (k in 2:nt){ d[k] ~ dnorm(0,.0001) } # vague priors for treatment effects 
+A ~ dnorm(-4.2,1.11) 
+for (k in 1:nt) { 
+  cloglog(T[k]) <- log(3) + A + d[k]  
+}
+}
+
