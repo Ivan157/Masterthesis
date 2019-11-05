@@ -1,0 +1,24 @@
+# Program 2(a):  Poisson likelihood, log link, Random Effects (Dietary fat example) 
+# Poisson likelihood, log link 
+# Random effects model for multi-arm trials 
+
+model { 
+  for(i in 1:ns){ # LOOP THROUGH STUDIES 
+    mu[i] ~ dnorm(0,.0001)    # vague priors for all trial baselines 
+    for (k in 1:na[i]) {      # LOOP THROUGH ARMS 
+      r[i,k] ~ dpois(theta[i,k])         # Poisson likelihood 
+      theta[i,k] <- lambda[i,k]*E[i,k]  # event rate * exposure 
+      log(lambda[i,k]) <- mu[i] + d[t[i,k]] - d[t[i,1]]         # model for linear predictor 
+      dev[i,k] <- 2*((theta[i,k]-r[i,k]) + r[i,k]*log(r[i,k]/theta[i,k])) #Deviance contribution 
+    } 
+    resdev[i] <- sum(dev[i,1:na[i]])      # summed residual deviance contribution for this trial 
+  }    
+  totresdev <- sum(resdev[1:10])              #Total Residual Deviance 
+  d[1]<-0          # treatment effect is zero for reference treatment 
+  for (k in 2:nt){ d[k] ~ dnorm(0,.0001) }  # vague priors for treatment effects 
+  
+  # zusätzlich eingefügt
+  A ~ dnorm(-3,1.77) 
+  for (k in 1:nt) { log(T[k]) <- A + d[k]  }
+} # Model END
+

@@ -1,0 +1,11 @@
+ns=10,  # number of studies;
+nt=2   # number of treatments;
+
+t[,] # specify the treatments in each arm;
+E[,]  # specify the exposure times  in each arm;
+r[,] # specify the number of events in each arm;
+ na[] # number of arms in each study => hier 3-arm trial;
+
+
+“NA” indicates that the data is missing for a particular cell;
+
