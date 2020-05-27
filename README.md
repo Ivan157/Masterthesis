@@ -1,5 +1,4 @@
 # Masterthesis
-Additional codes of my master thesis; read please the Readme for further explanations
 
 Title: “Bewertung statistischer Softwarepakete zur Durchführung von 
 Netzwerk-Meta-Analysen und Überprüfung eines Transfers auf 
